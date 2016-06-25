@@ -1,0 +1,79 @@
+/**
+ * Routes for express app
+ */
+var express = require('express');
+var mongoose = require('mongoose');
+var passport = require('passport');
+var path = require('path');
+var users = require('../controllers/users');
+
+// var LandingPage = require('../LandingPage');
+
+module.exports = function(app) {
+  // landing
+  app.get('/landing', function(req, res) {
+    res.sendFile('/LandingPage.html', { root: path.resolve( __dirname, ".." )});
+  });
+
+
+  // user routes
+  app.post('/login', users.postLogin);
+  app.post('/signup', users.postSignUp);
+  app.post('/logout', users.postLogout);
+  app.get('/user', users.getUserInfo);
+
+  // google auth
+  // Redirect the user to Google for authentication. When complete, Google
+  // will redirect the user back to the application at
+  // /auth/google/return
+  // Authentication with google requires an additional scope param, for more info go
+  // here https://developers.google.com/identity/protocols/OpenIDConnect#scope-param
+  app.get('/auth/google', passport.authenticate('google', { scope: [
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/userinfo.email'
+      ] }));
+
+  // Google will redirect the user to this URL after authentication. Finish the
+  // process by verifying the assertion. If valid, the user will be logged in.
+  // Otherwise, the authentication has failed.
+  app.get('/auth/google/callback',
+    passport.authenticate('google', {
+      successRedirect: '/',
+      failureRedirect: '/login'
+    }));
+
+  // facebook auth
+  // Redirect the user to Facebook for authentication. When complete, Facebook
+  // will redirect the user back to the application at
+  // /auth/facebook/callback
+  app.get('/auth/facebook', passport.authenticate('facebook', { scope: [
+        'public_profile',
+        'email'
+      ] }));
+  // app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email', 'user_location'] }));
+
+  // Facebook will redirect the user to this URL after authentication. Finish the
+  // process by verifying the assertion. If valid, the user will be logged in.
+  // Otherwise, the authentication has failed.
+  app.get('/auth/facebook/callback',
+    passport.authenticate('facebook', {
+      successRedirect: '/',
+      failureRedirect: '/login'
+    }));
+
+  // // topic routes
+  // app.get('/topic', topics.all);
+  //
+  // app.post('/topic/:id', function(req, res) {
+  //   topics.add(req, res);
+  // });
+  //
+  // app.put('/topic/:id', function(req, res) {
+  //   topics.update(req, res);
+  // });
+  //
+  // app.delete('/topic/:id', function(req, res) {
+  //   topics.remove(req, res);
+  // });
+
+};

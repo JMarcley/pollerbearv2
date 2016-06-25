@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 import classNames from 'classnames';
+import { logOut } from '../../actions/user';
 
 class Sidebar extends Component {
 
@@ -11,17 +12,23 @@ class Sidebar extends Component {
   render() {
 
   	const {version,user} = this.props;
+  	const logout = () => dispatch(logOut());
+    function test (e) {
+      e.preventDefult();
+      logOut();
+    }
 
     return (
 
     	<div className="sidebar">
 
 		  <div className="sidebar-item">
-		    <p>This is an example of a isomorphic website built with Redux and React</p>
-		    <p>Logged in as <b className="user-name">{user.name}</b></p>
+        <a onclick="test(event)">Logout</a>
+        <p>Logged in as <b className="user-name">{user.profile.name}</b></p>
 		  </div>
 
 		  <nav className="sidebar-nav">
+        <Link to="/profile" className="sidebar-nav-item" activeClassName="active">Profile</Link>
 		    <Link to="/home" className="sidebar-nav-item" activeClassName="active">Home <span className="nav-note">[static]</span></Link>
 		    <Link to="/reddit" className="sidebar-nav-item" activeClassName="active">Reddit <span className="nav-note">[api]</span></Link>
 		    <Link to="/todo" className="sidebar-nav-item" activeClassName="active">Todo <span className="nav-note">[stateful]</span></Link>
@@ -33,7 +40,7 @@ class Sidebar extends Component {
 		  <div className="sidebar-item sidebar-footer">
 		    <p>
 				Visit <a href="https://github.com/caljrimmer/isomorphic-redux-app">GitHub Repo</a><br/>
-				Based on <a href="http://lanyon.getpoole.com/"> Lanyon Theme</a> 
+				Based on <a href="http://lanyon.getpoole.com/"> Lanyon Theme</a>
 		    </p>
 		  </div>
 

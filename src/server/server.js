@@ -1,4 +1,5 @@
 import express from 'express';
+const app = express();
 
 import webpack from 'webpack';
 import webpackConfig from '../../webpack.config';
@@ -16,26 +17,22 @@ import { getUser } from '../common/api/user';
 import routes from '../common/routes';
 import packagejson from '../../package.json';
 
-const app = express();
-const renderFullPage = (html, initialState) => {
-  return `
-    <!doctype html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <title>Isomorphic Redux Example</title>
-        <link rel="stylesheet" type="text/css" href="/static/app.css">
-      </head>
-      <body>
-        <div id="root">${html}</div>
-        <script>
-          window.__INITIAL_STATE__ = ${JSON.stringify(initialState)}; 
-        </script>
-        <script src="/static/bundle.js"></script>
-      </body>
-    </html>
-  `;
-}
+// For HTTPS connection
+import https from 'https';
+import serverConfig from './serverConfig';
+
+//Config and settings
+import appSettings from './config/appSettings';
+
+//html Template [function]
+import renderTemplate from './template';
+
+//Database setup
+require('./config/connect')[appSettings.DB_TYPE]();
+
+//passport setup
+require('./config/passport')(app);
+
 
 if(process.env.NODE_ENV !== 'production'){
   const compiler = webpack(webpackConfig);
@@ -45,14 +42,23 @@ if(process.env.NODE_ENV !== 'production'){
   app.use('/static', express.static(__dirname + '/../../dist'));
 }
 
+//axios config
+require('./config/axios')(app);
+
+//express setup
+require('./config/express')(app);
+
+//server routes
+require('./config/routes')(app);
+
 app.get('/*', function (req, res) {
 
   const location = createLocation(req.url);
 
   getUser(user => {
 
-      if(!user) {
-        return res.status(401).end('Not Authorised');
+      if(!req.user) {
+        res.redirect('/landing');
       }
 
       match({ routes, location }, (err, redirectLocation, renderProps) => {
@@ -65,7 +71,8 @@ app.get('/*', function (req, res) {
         if(!renderProps)
           return res.status(404).end('Not found');
 
-        const store = configureStore({user : user, version : packagejson.version});
+        const store = configureStore({user : req.user, version : packagejson.version});
+        // const store = configureStore({version : packagejson.version});
 
         const InitialView = (
           <Provider store={store}>
@@ -80,11 +87,11 @@ app.get('/*', function (req, res) {
           .then(html => {
             const componentHTML = React.renderToString(InitialView);
             const initialState = store.getState();
-            res.status(200).end(renderFullPage(componentHTML,initialState))
+            res.status(200).end(renderTemplate(componentHTML,initialState))
           })
           .catch(err => {
             console.log(err)
-            res.end(renderFullPage("",{}))
+            res.end(renderTemplate("",{}))
           });
       });
 
@@ -93,8 +100,16 @@ app.get('/*', function (req, res) {
 
 });
 
-const server = app.listen(3002, function () {
-  const host = server.address().address;
-  const port = server.address().port;
-  console.log('Example app listening at http://%s:%s', host, port);
+const server = https.createServer(serverConfig.options, app).listen(app.get('port'), function() {
+    const host = server.address().address;
+    const port = server.address().port;
+    console.log('Example app listening at http://%s:%s', host, port);
 });
+// https.createServer(serverConfig.options, app).listen(app.get('port'));
+
+// const server = app.listen(3002, function () {
+//   const host = server.address().address;
+//   const port = server.address().port;
+//   console.log("nodemon: off");
+//   console.log('Example app listening at http://%s:%s', host, port);
+// });
