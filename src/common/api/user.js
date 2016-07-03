@@ -1,3 +1,13 @@
+export function checkUser(req, cb) {
+
+  let user = {};
+
+  if (req.user)
+
+
+  cb(user)
+}
+
 
 export function getUser(callback) {
   // Rather than immediately returning, we delay our code with a timeout to simulate asynchronous behavior

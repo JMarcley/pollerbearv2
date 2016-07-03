@@ -99,6 +99,11 @@ function logoutError() {
   return { type: types.LOGOUT_ERROR_USER };
 }
 
+//Get User Action creators
+function getUserDataRequest() {
+  return { type: types.GET_USER_DATA_REQUEST };
+}
+
 // // fetch user data action creators
 // function fetchUserData() {
 //   return { type: types.FETCH_USER_DATA };
@@ -170,17 +175,37 @@ export function logOut() {
   };
 }
 
-export function fetchUserData () {
-  console.log('fetchUserData called');
-  return {
-    type: GET_USER_DATA,
-    // promise:
-    //   new Promise (function(resolve, reject) {
-    //     console.log('promise called');
-    //     resolve( request({url: 'https://localhost:3000/user', method: 'get', withCredentials: true}) )
-    //     // resolve( request('https://localhost:3000/user') )
-    // })
-    promise: makeUserRequest('get', null, 'https://localhost:3000/axios/user')
+// export function fetchUserData () {
+//   console.log('fetchUserData called');
+//   return {
+//     type: GET_USER_DATA,
+//     // promise:
+//     //   new Promise (function(resolve, reject) {
+//     //     console.log('promise called');
+//     //     resolve( request({url: 'https://localhost:3000/user', method: 'get', withCredentials: true}) )
+//     //     // resolve( request('https://localhost:3000/user') )
+//     // })
+//     promise: makeUserRequest('get', null, '/user')
+//   };
+// }
+
+export function getUserData(data) {
+  console.log('getUserData');
+  return dispatch => {
+    dispatch(getUserDataRequest());
+
+    return makeUserRequest('get', null, '/user')
+      .then(response => {
+        if (response.status === 200) {
+          dispatch(getUserDataSuccess(response.data));
+          // dispatch(push('/'));
+        } else {
+          dispatch(getUserDataFailure('Oops! Something went wrong!'));
+        }
+      })
+      .catch(err => {
+        dispatch(getUserDataFailure(err.data.message));
+      });
   };
 }
 

@@ -87,7 +87,7 @@ exports.getUserInfo = function(req, res, next) {
       });
       // console.log(res);
     } else {
-      console.log("error in query for user _ID");
+      res.status(401).json({message: err});
     }
   });
 };

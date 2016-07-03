@@ -16,7 +16,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "axios": "0.7.0",
+    "axios": "^0.7.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.15.1",
     "classnames": "2.1.5",
@@ -36,6 +36,8 @@
     "react-router": "1.0.0-rc1",
     "react-router-redux": "^4.0.5",
     "redux": "3.0.0",
+    "redux-axios": "^0.0.2",
+    "redux-history": "^1.0.2",
     "redux-router": "1.0.0-beta3",
     "redux-thunk": "0.1.0",
     "redux-undo": "0.5.0",

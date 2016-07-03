@@ -10,9 +10,11 @@ import React from 'react';
 import { RoutingContext, match } from 'react-router';
 import { Provider } from 'react-redux';
 import createLocation from 'history/lib/createLocation';
+import { createMemoryHistory } from 'history';
 import { fetchComponentDataBeforeRender } from '../common/api/fetchComponentDataBeforeRender';
 
 import configureStore from '../common/store/configureStore';
+// import configureStore from '../common/store/newConfigureStore';
 import { getUser } from '../common/api/user';
 import routes from '../common/routes';
 import packagejson from '../../package.json';
@@ -57,7 +59,7 @@ app.get('/*', function (req, res) {
 
   getUser(user => {
 
-      if(!req.user) {
+      if(!req.session.passport.user) {
         res.redirect('/landing');
       }
 
@@ -71,7 +73,7 @@ app.get('/*', function (req, res) {
         if(!renderProps)
           return res.status(404).end('Not found');
 
-        const store = configureStore({user : req.user, version : packagejson.version});
+        const store = configureStore({user : req.user, version : packagejson.version} );
         // const store = configureStore({version : packagejson.version});
 
         const InitialView = (

@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 // import Picker from './reddit/Picker';
 // import Posts from './reddit/Posts';
+import * as UserActions from '../actions/user';
 
 class Profile extends Component {
   constructor(props) {
@@ -11,13 +12,15 @@ class Profile extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props);
     // const { selectedReddit } = this.props;
     // this.props.fetchPostsIfNeeded(selectedReddit);
   }
+
+  componentWillMount() {
+    UserActions.getUserData();
+  }
   //
   componentWillReceiveProps(nextProps) {
-    console.log('this.props');
     // if (nextProps.selectedReddit !== this.props.selectedReddit) {
     //   const { selectedReddit } = nextProps;
     //   this.props.fetchPostsIfNeeded(selectedReddit);
@@ -36,10 +39,11 @@ class Profile extends Component {
   }
 
   render () {
-    const { user } = this.props;
+    const { profile } = this.props;
     return (
       <div>
-        <p>user: {user}</p>
+        <p>user: {profile.name}</p>
+        <img src={profile.picture} />
       </div>
     );
   }

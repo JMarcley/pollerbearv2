@@ -93,7 +93,7 @@ export default function user(state = {
       });
     case GET_USER_DATA:
       return Object.assign({}, state, {
-        profiile: action.req.data,
+        // profile: action.req.data,
         message: ''
       });
     case GET_USER_DATA_REQUEST:
@@ -107,7 +107,8 @@ export default function user(state = {
       });
     case GET_USER_DATA_FAILURE:
       return Object.assign({}, state, {
-        isFetching: false
+        isFetching: false,
+        message: action.message
       });
     case CLEAR_USER_DATA:
       return Object.assign({}, state, {

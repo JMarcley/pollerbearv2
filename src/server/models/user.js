@@ -27,7 +27,8 @@ var UserSchema = new mongoose.Schema({
   resetPasswordToken: String,
   resetPasswordExpires: Date,
   google: {},
-  facebook: {}
+  facebook: {},
+  league: Array
 });
 
 
